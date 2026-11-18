@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lifebox — Central de Monitoramento 24h · Kairos Digital</title>
+<meta name="description" content="Videomonitoramento ao vivo com dashboard de IA. Teste 24 horas: veja o painel real de câmeras do seu negócio funcionando.">
+<style>
+  :root{
+    --fundo:#0b1220; --painel:#111a2e; --linha:#24314d;
+    --texto:#eef2f9; --suave:#a7b4cf;
+    --ambar:#ffb020;
+    --verde:#34d399; --ambar-piscar:#fbbf24;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--fundo); color:var(--texto);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  }
+  header{
+    width:100%; max-width:860px; padding:26px 20px 0;
+    display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap;
+  }
+  .marca{font-weight:800; letter-spacing:.14em; font-size:15px; color:var(--ambar)}
+  .marca span{color:var(--texto); font-weight:600; letter-spacing:.02em}
+  .tipo{color:var(--suave); font-size:13px; letter-spacing:.08em; text-transform:uppercase}
+  main{width:100%; max-width:860px; padding:26px 20px 40px; text-align:center; flex:1}
+  h1{font-size:clamp(28px,5vw,44px); line-height:1.15; font-weight:800; margin-top:18px}
+  h1 em{font-style:normal; color:var(--ambar)}
+  p.sub{color:var(--suave); font-size:clamp(15px,2.4vw,18px); line-height:1.6; max-width:620px; margin:18px auto 0}
+  .prova{
+    display:inline-flex; align-items:center; gap:8px; margin-top:26px;
+    background:var(--painel); border:1px solid var(--linha); border-radius:999px;
+    padding:9px 18px; font-size:13.5px; color:var(--suave);
+  }
+  .prova b{color:var(--texto); font-weight:700}
+  .status{
+    display:inline-flex; align-items:center; gap:9px; margin-top:16px;
+    border-radius:999px; padding:8px 16px; font-size:13px; font-weight:700; letter-spacing:.06em;
+    border:1px solid var(--linha); background:var(--painel); color:var(--suave);
+  }
+  .dot{width:10px; height:10px; border-radius:50%; background:var(--suave); flex:none}
+  .status.up{color:var(--verde); border-color:rgba(52,211,153,.4)}
+  .status.up .dot{background:var(--verde); box-shadow:0 0 10px rgba(52,211,153,.8)}
+  .status.down{color:var(--ambar-piscar); border-color:rgba(251,191,36,.4)}
+  .status.down .dot{background:var(--ambar-piscar); animation:pisca 1.2s infinite}
+  @keyframes pisca{50%{opacity:.25}}
+  .acoes{margin-top:34px; display:flex; flex-direction:column; gap:14px; align-items:center}
+  button, a.btn{
+    display:inline-block; border:none; cursor:pointer; text-decoration:none;
+    border-radius:14px; font-weight:800; letter-spacing:.005em; text-align:center;
+    transition:transform .12s ease, box-shadow .12s ease, opacity .2s;
+  }
+  button:hover, a.btn:hover{transform:translateY(-2px)}
+  button:disabled{opacity:.55; cursor:wait; transform:none}
+  .btn-ao-vivo{
+    background:var(--ambar); color:#161006; font-size:18px;
+    padding:18px 46px; width:min(420px,100%);
+    box-shadow:0 10px 34px rgba(255,176,32,.28);
+  }
+  .btn-wa{
+    background:transparent; color:var(--texto); border:1.5px solid var(--linha);
+    font-size:15.5px; padding:15px 38px; width:min(420px,100%);
+  }
+  .btn-wa:hover{border-color:var(--ambar)}
+  .dica{margin-top:22px; color:var(--suave); font-size:13.5px; line-height:1.55; max-width:520px}
+  .numeros{
+    margin-top:38px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; max-width:620px; margin-left:auto; margin-right:auto;
+  }
+  .num{background:var(--painel); border:1px solid var(--linha); border-radius:14px; padding:16px 10px}
+  .num b{display:block; font-size:clamp(20px,3.4vw,28px); color:var(--ambar); font-weight:800}
+  .num span{font-size:12.5px; color:var(--suave); letter-spacing:.04em}
+  footer{width:100%; padding:20px; text-align:center; color:var(--suave); font-size:12.5px; border-top:1px solid var(--linha)}
+  footer b{color:var(--texto); font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">KAIROS <span>DIGITAL</span></div>
+  <div class="tipo">Central de Monitoramento</div>
+</header>
+
+<main>
+  <h1>Videomonitoramento ao vivo<br>com <em>dashboard de inteligência</em></h1>
+  <p class="sub">Veja funcionando agora a central de câmeras que colocamos no seu negócio:
+  imagens em tempo real, visão noturna e alertas no seu celular — sem instalar nada para testar.</p>
+
+  <div class="prova">Teste 24h em ambiente real · <b>48 câmeras</b> · <b>3 NVRs</b> · cliente ativo no estado</div><br>
+  <div class="status" id="status"><span class="dot"></span><span id="status-txt">VERIFICANDO SINAL DO CLIENTE…</span></div>
+
+  <div class="acoes">
+    <button class="btn-ao-vivo" id="btn-ao-vivo" onclick="abrirPainel()">ABRIR PAINEL AO VIVO</button>
+    <a class="btn-wa" target="_blank" rel="noopener"
+       href="https://wa.me/556284452548?text=Ol%C3%A1!%20Vi%20a%20demonstra%C3%A7%C3%A3o%20da%20central%20de%20c%C3%A2meras%20Lifebox%20e%20quero%20conversar%20com%20quem%20for%20respons%C3%A1vel%20pelo%20meu%20neg%C3%B3cio.">FALAR COM UM ESPECIALISTA</a>
+  </div>
+
+  <p class="dica" id="dica">O teste fica no ar 24 horas por dia, todos os dias. É só abrir no celular ou computador.</p>
+
+  <div class="numeros">
+    <div class="num"><b>24h</b><span>painel no ar todos os dias</span></div>
+    <div class="num"><b>IA</b><span>alertas e leitura das câmeras</span></div>
+    <div class="num"><b>1 clique</b><span>do gerador pro celular</span></div>
+  </div>
+</main>
+
+<footer><b>Kairos Digital</b> · Goiânia — GO · Soluções de inteligência para o comércio</footer>
+
+<script>
+  var CAM_JSON = '../cameras.json';
+  var baseAtual = null;
+
+  function carregarBase(cb){
+    fetch(CAM_JSON + '?t=' + Date.now(), {cache:'no-store'})
+      .then(function(r){ if(!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function(j){ baseAtual = (j && j.base) ? String(j.base).replace(/\/+$/,'') : null; cb(baseAtual); })
+      .catch(function(){ cb(null); });
+  }
+
+  function checarSinal(){
+    var el = document.getElementById('status'), txt = document.getElementById('status-txt');
+    var dica = document.getElementById('dica');
+    carregarBase(function(base){
+      if(!base){ el.className = 'status down'; txt.textContent = 'PAINEL FORA DO AR NO MOMENTO';
+        dica.textContent = 'O sinal do cliente está sendo reconectado. Chama um especialista que ele abre o painel na hora, na sua frente.'; return; }
+      fetch(base + '/api/status?t=' + Date.now(), {mode:'no-cors', cache:'no-store'})
+        .then(function(){ el.className = 'status up'; txt.textContent = 'SINAL AO VIVO AGORA';
+          dica.textContent = 'O teste fica no ar 24 horas por dia, todos os dias. É só abrir no celular ou computador.'; })
+        .catch(function(){ el.className = 'status down'; txt.textContent = 'RECONECTANDO SINAL DO CLIENTE';
+          dica.textContent = 'O sinal do cliente está sendo reconectado. Chama um especialista que ele abre o painel na hora, na sua frente.'; });
+    });
+  }
+
+  function abrirPainel(){
+    var b = document.getElementById('btn-ao-vivo');
+    b.disabled = true; b.textContent = 'CARREGANDO PAINEL…';
+    carregarBase(function(base){
+      b.disabled = false; b.textContent = 'ABRIR PAINEL AO VIVO';
+      if(base){ window.open(base + '/cameras.html', '_blank'); }
+      else{ alert('O painel do cliente está reconectando. Fale com um especialista aqui embaixo que ele abre na hora.'); }
+    });
+  }
+
+  checarSinal();
+  setInterval(checarSinal, 30000);
+</script>
+</body>
+</html>
